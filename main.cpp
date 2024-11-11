@@ -51,8 +51,9 @@ int main() {
     char mode;
 
     do {
-        cout << "Select a mode (Manual 'm' or automatic 'a'):";
+        cout << "Select a mode (Manual 'm' or automatic 'a'):" << endl;
         cin >> mode;
+        getchar();
     } while (mode != 'm' && mode != 'a');
 
     if (mode == 'm') {

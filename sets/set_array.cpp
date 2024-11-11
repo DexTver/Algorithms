@@ -59,10 +59,10 @@ set_array set_array::operator~() const {
 
 set_array &set_array::operator=(const set_array &other) {
     if (this != &other) {
-        delete[] A;
-        A = new char[U + 1];
+        for (int i = 0; i < other.n; ++i) {
+            A[i] = other.A[i];
+        }
         n = other.n;
-        std::copy(other.A, other.A + other.n, A);
         A[n] = '\0';
     }
     return *this;
@@ -70,10 +70,13 @@ set_array &set_array::operator=(const set_array &other) {
 
 void set_array::show() const {
     std::cout << "[";
-    for (int i = 0; i < n - 1; ++i) {
-        std::cout << A[i] << ", ";
+    bool first = true;
+    for (int i = 0; i < n; ++i) {
+        if (!first) std::cout << ", ";
+        std::cout << A[i];
+        first = false;
     }
-    std::cout << A[n - 1] << "]";
+    std::cout << "]";
 }
 
 int set_array::power() const {
