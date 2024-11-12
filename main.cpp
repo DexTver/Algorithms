@@ -29,26 +29,23 @@ void scan_set(char t[U + 1]) {
     } while (x != '\n');
 }
 
-void generator(char a[]) {
+void generatorWithFixedLen(char a[], int len) {
     mt19937 rnd(random_device{}());
-    int len = uniform_int_distribution(1, 10)(rnd);
-
     char digits[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-    for (int i = 0; i < len; ++i) {
-        if (uniform_int_distribution<int>(0, 1)(rnd)) {
-            a[i] = digits[i];
-        } else {
-            a[i] = '\0';
-        }
+    for (int i = 9; i > 0; --i) {
+        int j = uniform_int_distribution<int>(0, i)(rnd);
+        swap(digits[i], digits[j]);
     }
-
-    shuffle(a, a + len, rnd);
+    for (int i = 0; i < len; ++i) {
+        a[i] = digits[i];
+    }
 }
 
 int main() {
     char a[U + 1]{}, b[U + 1]{}, c[U + 1]{}, d[U + 1]{};
     char mode;
+    int ln;
 
     do {
         cout << "Select a mode (Manual 'm' or automatic 'a'):" << endl;
@@ -67,10 +64,12 @@ int main() {
         cout << "D:";
         scan_set(d);
     } else {
-        generator(a);
-        generator(b);
-        generator(c);
-        generator(d);
+        cout << "Enter length of set (0 to 10):\n";
+        cin >> ln;
+        generatorWithFixedLen(a, ln);
+        generatorWithFixedLen(b, ln);
+        generatorWithFixedLen(c, ln);
+        generatorWithFixedLen(d, ln);
     }
 
     if (mode == 'a') {
@@ -128,4 +127,6 @@ int main() {
     ~machine_word_b;
     ~machine_word_c;
     ~machine_word_d;
+    cout.flush();
+
 }
