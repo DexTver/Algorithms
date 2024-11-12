@@ -87,7 +87,7 @@ int main() {
     auto start = chrono::high_resolution_clock::now();
     (array_a & array_b) | array_c | array_d;
     auto stop = chrono::high_resolution_clock::now();
-    cout << "\nArray result:\t\t";
+    cout << "\nArray result:\t\t\t";
     ((array_a & array_b) | array_c | array_d).show();
     cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
     ~array_a;
@@ -98,7 +98,7 @@ int main() {
     start = chrono::high_resolution_clock::now();
     (list_a & list_b) | list_c | list_d;
     stop = chrono::high_resolution_clock::now();
-    cout << "List result:\t\t";
+    cout << "List result:\t\t\t";
     ((list_a & list_b) | list_c | list_d).show();
     cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
     ~list_a;
@@ -109,7 +109,7 @@ int main() {
     start = chrono::high_resolution_clock::now();
     (bool_array_a & bool_array_b) | bool_array_c | bool_array_d;
     stop = chrono::high_resolution_clock::now();
-    cout << "Bool array result:\t";
+    cout << "Bool array result:\t\t";
     ((bool_array_a & bool_array_b) | bool_array_c | bool_array_d).show();
     cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
     ~bool_array_a;
