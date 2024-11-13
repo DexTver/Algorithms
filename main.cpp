@@ -78,7 +78,7 @@ int main() {
         cout << "A: " << a << "\n";
         cout << "B: " << b << "\n";
         cout << "C: " << c << "\n";
-        cout << "D: " << d << "\n";
+        cout << "D: " << d << endl;
     }
 
     set_array array_a(a), array_b(b), array_c(c), array_d(d);
@@ -91,44 +91,26 @@ int main() {
     auto stop = chrono::high_resolution_clock::now();
     cout << "\nArray result:\t\t\t";
     ((array_a & array_b) | array_c | array_d).show();
-    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
-    ~array_a;
-    ~array_b;
-    ~array_c;
-    ~array_d;
+    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds" << endl;
 
     start = chrono::high_resolution_clock::now();
     (list_a & list_b) | list_c | list_d;
     stop = chrono::high_resolution_clock::now();
     cout << "List result:\t\t\t";
     ((list_a & list_b) | list_c | list_d).show();
-    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
-    ~list_a;
-    ~list_b;
-    ~list_c;
-    ~list_d;
+    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds" << endl;
 
     start = chrono::high_resolution_clock::now();
     (bool_array_a & bool_array_b) | bool_array_c | bool_array_d;
     stop = chrono::high_resolution_clock::now();
     cout << "Bool array result:\t\t";
     ((bool_array_a & bool_array_b) | bool_array_c | bool_array_d).show();
-    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
-    ~bool_array_a;
-    ~bool_array_b;
-    ~bool_array_c;
-    ~bool_array_d;
+    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds" << endl;
 
     start = chrono::high_resolution_clock::now();
     (machine_word_a & machine_word_b) | machine_word_c | machine_word_d;
     stop = chrono::high_resolution_clock::now();
     cout << "Machine word result:\t";
     ((machine_word_a & machine_word_b) | machine_word_c | machine_word_d).show();
-    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
-    ~machine_word_a;
-    ~machine_word_b;
-    ~machine_word_c;
-    ~machine_word_d;
-    cout.flush();
-
+    cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds" << endl;
 }
