@@ -41,25 +41,21 @@ int main() {
             (array_a & array_b) | array_c | array_d;
             auto stop = chrono::high_resolution_clock::now();
             array += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
-            ~array_a; ~array_b; ~array_c; ~array_d;
 
             start = chrono::high_resolution_clock::now();
             (list_a & list_b) | list_c | list_d;
             stop = chrono::high_resolution_clock::now();
             list += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
-            ~list_a; ~list_b; ~list_c; ~list_d;
 
             start = chrono::high_resolution_clock::now();
             (bool_array_a & bool_array_b) | bool_array_c | bool_array_d;
             stop = chrono::high_resolution_clock::now();
             bool_array += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
-            ~bool_array_a; ~bool_array_b; ~bool_array_c; ~bool_array_d;
 
             start = chrono::high_resolution_clock::now();
             (machine_word_a & machine_word_b) | machine_word_c | machine_word_d;
             stop = chrono::high_resolution_clock::now();
             machine_word += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
-            ~machine_word_a; ~machine_word_b; ~machine_word_c; ~machine_word_d;
         }
         cout << ln << '\t';
         cout << array / 1000 << '\t';
