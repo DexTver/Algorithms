@@ -45,7 +45,7 @@ void generatorWithFixedLen(char a[], int len) {
 int main() {
     char a[U + 1]{}, b[U + 1]{}, c[U + 1]{}, d[U + 1]{};
     char mode;
-    int ln;
+    int ln = 0;
 
     do {
         cout << "Select a mode (Manual 'm' or automatic 'a'):" << endl;
@@ -64,8 +64,10 @@ int main() {
         cout << "D:";
         scan_set(d);
     } else {
-        cout << "Enter length of set (0 to 10):\n";
-        cin >> ln;
+        cout << "Enter length of set (1 to 10):\n";
+        do {
+            cin >> ln;
+        } while (ln < 1 || ln > 10);
         generatorWithFixedLen(a, ln);
         generatorWithFixedLen(b, ln);
         generatorWithFixedLen(c, ln);
