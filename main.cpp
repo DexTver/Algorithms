@@ -122,7 +122,7 @@ int main() {
     start = chrono::high_resolution_clock::now();
     (machine_word_a & machine_word_b) | machine_word_c | machine_word_d;
     stop = chrono::high_resolution_clock::now();
-    cout << "Machine word result:\t";
+    cout << "Machine word result:\t\t";
     ((machine_word_a & machine_word_b) | machine_word_c | machine_word_d).show();
     cout << " in " << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << " nanoseconds\n";
     ~machine_word_a;
