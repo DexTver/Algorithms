@@ -23,8 +23,8 @@ void generatorWithFixedLen(char a[], int len) {
 }
 
 int main() {
-    freopen("log.txt", "w", stdout);
     char a[U + 1]{}, b[U + 1]{}, c[U + 1]{}, d[U + 1]{};
+    long long array = 0, list = 0, bool_array = 0, machine_word = 0;
     for (int ln = 1; ln <= 10; ++ln) {
         for (int i = 0; i < 1000; ++i) {
             generatorWithFixedLen(a, ln);
@@ -40,38 +40,31 @@ int main() {
             auto start = chrono::high_resolution_clock::now();
             (array_a & array_b) | array_c | array_d;
             auto stop = chrono::high_resolution_clock::now();
-            cout <<chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << "\n";
-            ~array_a;
-            ~array_b;
-            ~array_c;
-            ~array_d;
+            array += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            ~array_a; ~array_b; ~array_c; ~array_d;
 
             start = chrono::high_resolution_clock::now();
             (list_a & list_b) | list_c | list_d;
             stop = chrono::high_resolution_clock::now();
-            cout << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << "\n";
-            ~list_a;
-            ~list_b;
-            ~list_c;
-            ~list_d;
+            list += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            ~list_a; ~list_b; ~list_c; ~list_d;
 
             start = chrono::high_resolution_clock::now();
             (bool_array_a & bool_array_b) | bool_array_c | bool_array_d;
             stop = chrono::high_resolution_clock::now();
-            cout << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << "\n";
-            ~bool_array_a;
-            ~bool_array_b;
-            ~bool_array_c;
-            ~bool_array_d;
+            bool_array += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            ~bool_array_a; ~bool_array_b; ~bool_array_c; ~bool_array_d;
 
             start = chrono::high_resolution_clock::now();
             (machine_word_a & machine_word_b) | machine_word_c | machine_word_d;
             stop = chrono::high_resolution_clock::now();
-            cout  << chrono::duration_cast<chrono::nanoseconds>(stop - start).count() << "\n";
-            ~machine_word_a;
-            ~machine_word_b;
-            ~machine_word_c;
-            ~machine_word_d;
+            machine_word += chrono::duration_cast<chrono::nanoseconds>(stop - start).count();
+            ~machine_word_a; ~machine_word_b; ~machine_word_c; ~machine_word_d;
         }
+        cout << ln << '\t';
+        cout << array / 1000 << '\t';
+        cout << list / 1000 << '\t';
+        cout << bool_array / 1000 << '\t';
+        cout << machine_word / 1000 << endl;
     }
 }
