@@ -13,6 +13,7 @@ public:
     set_array();                        // Конструктор по умолчанию
     explicit set_array(const char *);   // Конструктор с передачей множества в виде строки
     set_array(const set_array &);       // Конструктор копии
+    set_array(set_array &&) noexcept;   // Перемещающий конструктор
     ~set_array();                       // Деструктор
 
     set_array operator|(const set_array &) const;   // Операция объединения

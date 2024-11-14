@@ -25,6 +25,12 @@ set_array::set_array(const set_array &other) : n(other.n), S('A' + cnt++), A(new
     std::cout << "Set copy constructor called for Set " << S << " from Set " << other.S << std::endl;
 }
 
+set_array::set_array(set_array &&other) noexcept : n(other.n), S('A' + cnt++), A(other.A) {
+    other.A = nullptr;
+    other.n = 0;
+    std::cout << "Set move constructor called for Set " << S << " from Set " << other.S << std::endl;
+}
+
 set_array::~set_array() {
     std::cout << "Set destructor called for Set " << S << std::endl;
     delete[] A;
