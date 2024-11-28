@@ -1,63 +1,88 @@
 #include <iostream>
-#include <vector>
 #include <cstdlib>
 #include <ctime>
+
+template<typename T>
+class STACK {
+private:
+    T *stackArray;
+    int topIndex;
+    int capacity;
+
+public:
+    STACK(int maxCapacity = 100) : capacity(maxCapacity), topIndex(0) {
+        stackArray = new T[capacity];
+    }
+
+    ~STACK() {
+        delete[] stackArray;
+    }
+
+    bool empty() const {
+        return topIndex == 0;
+    }
+
+    void push(const T &item) {
+        if (topIndex >= capacity) {
+            throw std::overflow_error("Stack overflow");
+        }
+        stackArray[topIndex++] = item;
+    }
+
+    T pop() {
+        if (empty()) {
+            throw std::underflow_error("Stack underflow");
+        }
+        return stackArray[--topIndex];
+    }
+};
 
 class Node {
 public:
     char label;
-    Node* left;
-    Node* right;
+    Node *left;
+    Node *right;
 
     Node() : label('\0'), left(nullptr), right(nullptr) {}
+
     ~Node() {
         delete left;
         delete right;
     }
 };
 
-template <typename T>
-class STACK {
-public:
-    STACK() = default;
-    void push(const T& item) {
-        data.push_back(item);
-    }
-    T pop() {
-        if (data.empty()) {
-            throw std::out_of_range("Stack is empty");
-        }
-        T item = data.back();
-        data.pop_back();
-        return item;
-    }
-    bool empty() const {
-        return data.empty();
-    }
-private:
-    std::vector<T> data;
-};
-
 class Tree {
 public:
     Tree();
+
     ~Tree();
+
     void MakeTree();
+
     void OutTree();
+
     void DFS();
+
     int GetLeftSubtreeHeight();
 
 private:
-    Node* root;
-    void MakeTree(Node*& node, int depth);
-    void OutTree(Node* node, int x, int y, char screen[][120], int maxrow, int spacing);
-    int GetHeight(Node* node);
-    void LabelNodes(Node* node, char& currentLabel);
+    Node *root;
 
-    Tree(const Tree&) = delete;
-    Tree& operator=(const Tree&) = delete;
-    Tree(Tree&&) = delete;
-    Tree& operator=(Tree&&) = delete;
+    void MakeTree(Node *&node, int depth);
+
+    void OutTree(Node *node, int x, int y, char screen[][120], int maxrow, int spacing);
+
+    int GetHeight(Node *node);
+
+    void LabelNodes(Node *node, char &currentLabel);
+
+    Tree(const Tree &) = delete;
+
+    Tree &operator=(const Tree &) = delete;
+
+    Tree(Tree &&) = delete;
+
+    Tree &operator=(Tree &&) = delete;
 };
 
 Tree::Tree() : root(nullptr) {}
@@ -72,7 +97,7 @@ void Tree::MakeTree() {
     LabelNodes(root, currentLabel);
 }
 
-void Tree::MakeTree(Node*& node, int depth) {
+void Tree::MakeTree(Node *&node, int depth) {
     if (depth > 6) {
         return;
     }
@@ -86,7 +111,7 @@ void Tree::MakeTree(Node*& node, int depth) {
     }
 }
 
-void Tree::LabelNodes(Node* node, char& currentLabel) {
+void Tree::LabelNodes(Node *node, char &currentLabel) {
     if (node == nullptr) {
         return;
     }
@@ -122,7 +147,7 @@ void Tree::OutTree() {
     }
 }
 
-void Tree::OutTree(Node* node, int x, int y, char screen[][120], int maxrow, int spacing) {
+void Tree::OutTree(Node *node, int x, int y, char screen[][120], int maxrow, int spacing) {
     if (node == nullptr || y >= maxrow || x < 0 || x >= 120) {
         return;
     }
@@ -142,11 +167,11 @@ void Tree::DFS() {
         return;
     }
 
-    STACK<Node*> stack;
+    STACK<Node *> stack(100);
     stack.push(root);
     std::cout << "DFS traversal: ";
     while (!stack.empty()) {
-        Node* node = stack.pop();
+        Node *node = stack.pop();
         std::cout << node->label << ' ';
         if (node->right)
             stack.push(node->right);
@@ -164,7 +189,7 @@ int Tree::GetLeftSubtreeHeight() {
     return GetHeight(root->left);
 }
 
-int Tree::GetHeight(Node* node) {
+int Tree::GetHeight(Node *node) {
     if (node == nullptr) {
         return 0;
     }
