@@ -7,25 +7,24 @@ using namespace std;
 
 class Graph {
 private:
-    int n; // Number of vertices
-    vector<vector<int>> adjMatrix; // Adjacency matrix
+    int n;
+    vector<vector<int>> adjMatrix;
 
-    // Function to check if a connected component is bipartite
     bool isBipartiteComponent(int start, vector<int>& colors) {
         queue<int> q;
         q.push(start);
-        colors[start] = 0; // Assign initial color
+        colors[start] = 0;
 
         while (!q.empty()) {
             int v = q.front();
             q.pop();
             for (int u = 0; u < n; ++u) {
-                if (adjMatrix[v][u]) { // Edge exists
+                if (adjMatrix[v][u]) {
                     if (colors[u] == -1) {
-                        colors[u] = 1 - colors[v]; // Assign opposite color
+                        colors[u] = 1 - colors[v];
                         q.push(u);
                     } else if (colors[u] == colors[v]) {
-                        return false; // Not bipartite
+                        return false;
                     }
                 }
             }
@@ -34,10 +33,8 @@ private:
     }
 
 public:
-    // Constructor
     Graph(int vertices) : n(vertices), adjMatrix(vertices, vector<int>(vertices, 0)) {}
 
-    // Generate a random undirected graph
     void generateRandomGraph(double density) {
         srand(time(nullptr));
         for (int i = 0; i < n; ++i) {
@@ -49,10 +46,9 @@ public:
         }
     }
 
-    // Find and print all bipartite components
     void findBipartiteComponents() {
-        vector<int> colors(n, -1); // Color assignments for vertices
-        vector<bool> visited(n, false); // Visited vertices
+        vector<int> colors(n, -1);
+        vector<bool> visited(n, false);
 
         for (int i = 0; i < n; ++i) {
             if (!visited[i]) {
@@ -67,20 +63,17 @@ public:
                     cout << endl;
                 } else {
                     cout << "Component starting at vertex " << i << " is not bipartite." << endl;
-                    // Mark all vertices in this component as visited
                     for (int j = 0; j < n; ++j) {
                         if (colors[j] != -1) {
                             visited[j] = true;
                         }
                     }
                 }
-                // Reset colors for the next component
                 fill(colors.begin(), colors.end(), -1);
             }
         }
     }
 
-    // Print the adjacency matrix
     void printAdjMatrix() const {
         cout << "Adjacency matrix of the graph:\n";
         for (const auto& row : adjMatrix) {
@@ -93,8 +86,8 @@ public:
 };
 
 int main() {
-    int vertices = 10; // Number of vertices
-    double density = 0.3; // Edge density (probability of edge existence)
+    int vertices = 10;
+    double density = 0.3;
 
     Graph g(vertices);
     g.generateRandomGraph(density);
