@@ -15,7 +15,6 @@ int main() {
         g[u].push_back(v);
         g[v].push_back(u);
     }
-
     vector<bool> visited(n, false);
     int cnt = 0;
     vector<vector<pair<int, int>>> spanning_edges;
@@ -31,19 +30,20 @@ int main() {
                 for (auto w: g[u]) {
                     if (!visited[w]) {
                         visited[w] = true;
-                        spanning_edges[cnt].emplace_back(u, v);
+                        spanning_edges[cnt].emplace_back(u, w);
                         q.push(w);
                     }
                 }
             }
+            ++cnt;
         }
     }
 
-    cout << "Count of connected components: " << cnt + 1 << "\n";
+    cout << "Count of connected components: " << cnt << "\n";
     for (int i = 0; i < cnt; ++i) {
-        cout << "\nComponent " << cnt + 1 << ":\n";
+        cout << "\nComponent " << i + 1 << ":\n";
         for (auto x : spanning_edges[i]) {
-            cout << x.first << "-" << x.second << "\n";
+            cout << x.first + 1 << "-" << x.second + 1 << "\n";
         }
     }
 
