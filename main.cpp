@@ -15,23 +15,25 @@ int main() {
         g[u].push_back(v);
         g[v].push_back(u);
     }
-    vector<bool> visited(n, false);
+    vector<int> color(n, 0);
     int cnt = 0;
     vector<vector<pair<int, int>>> spanning_edges;
     queue<int> q;
     for (int i = 0; i < n; ++i) {
-        if (!visited[i]) {
+        if (!color[i]) {
             spanning_edges.emplace_back();
-            visited[i] = true;
+            color[i] = 1;
             q.push(i);
             while (!q.empty()) {
                 u = q.front();
                 q.pop();
                 for (auto w: g[u]) {
-                    if (!visited[w]) {
-                        visited[w] = true;
+                    if (!color[w]) {
+                        color[w] = color[u] == 1 ? 2 : 1;
                         spanning_edges[cnt].emplace_back(u, w);
                         q.push(w);
+                    } else if (color[w] != color[u]) {
+                        spanning_edges[cnt].emplace_back(u, w);
                     }
                 }
             }
@@ -42,7 +44,7 @@ int main() {
     cout << "Count of connected components: " << cnt << "\n";
     for (int i = 0; i < cnt; ++i) {
         cout << "\nComponent " << i + 1 << ":\n";
-        for (auto x : spanning_edges[i]) {
+        for (auto x: spanning_edges[i]) {
             cout << x.first + 1 << "-" << x.second + 1 << "\n";
         }
     }
