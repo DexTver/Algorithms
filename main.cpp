@@ -5,44 +5,44 @@
 using namespace std;
 
 int main() {
-    int n;
-    int m;
+    int n, m, u, v;
     cin >> n >> m;
-
     vector<vector<int>> g(n);
-    vector<pair<int, int>> edges(m);
-    vector<int> color(n, 0);
-    queue<int> q;
-
     for (int i = 0; i < m; ++i) {
-        int u, v;
         cin >> u >> v;
         u--;
         v--;
         g[u].push_back(v);
         g[v].push_back(u);
-        edges[i] = {u, v};
     }
-
+    vector<bool> visited(n, false);
+    int cnt = 0;
+    vector<vector<pair<int, int>>> spanning_edges;
+    queue<int> q;
     for (int i = 0; i < n; ++i) {
-        if (!color[i]) {
-            color[i] = 1;
+        if (!visited[i]) {
+            spanning_edges.emplace_back();
+            visited[i] = true;
             q.push(i);
             while (!q.empty()) {
-                int u = q.front();
+                u = q.front();
                 q.pop();
-                for (int w: g[u]) {
-                    if (!color[w]) {
-                        color[w] = color[u] == 1 ? 2 : 1;
+                for (auto w: g[u]) {
+                    if (!visited[w]) {
+                        visited[w] = true;
+                        spanning_edges[cnt].emplace_back(u, w);
                         q.push(w);
                     }
                 }
             }
+            ++cnt;
         }
     }
 
-    for (auto x: edges) {
-        if (color[x.first] != color[x.second]) {
+    cout << "Count of connected components: " << cnt << "\n";
+    for (int i = 0; i < cnt; ++i) {
+        cout << "\nComponent " << i + 1 << ":\n";
+        for (auto x : spanning_edges[i]) {
             cout << x.first + 1 << "-" << x.second + 1 << "\n";
         }
     }
