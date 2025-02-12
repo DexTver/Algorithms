@@ -1,6 +1,5 @@
 #include <list>
 using std::list;
-//==1. Поддержка экрана в форме матрицы символов ==
 char screen[YMAX][XMAX];
 
 enum color { black = '*', white = '.' };

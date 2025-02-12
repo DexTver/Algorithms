@@ -34,40 +34,27 @@ public:
     void resize(double d) override {
         size *= d;
     }
-
-    // Реализация поворота для косого креста
-    void rotate_left() override {
-        // Поворот на 90 градусов влево
-        int temp = size;
-        size = size / 2; // Пример изменения размера при повороте
-    }
-
-    void rotate_right() override {
-        // Поворот на 90 градусов вправо
-        int temp = size;
-        size = size * 2; // Пример изменения размера при повороте
-    }
 };
 
 // Функция для размещения фигуры слева
-void left(shape &p, const shape &q) {
+void left(diagonal_cross p, const shape &q) {
     point w = q.west();
     point e = p.east();
     p.move(w.x - e.x - 1, w.y - e.y);
 }
 
 // Функция для размещения фигуры справа
-void right(shape &p, const shape &q) {
+void right(diagonal_cross p, const shape &q) {
     point e = q.east();
     point w = p.west();
     p.move(e.x - w.x + 1, e.y - w.y);
 }
 
 // Функция для размещения фигуры сверху
-void up(shape &p, const shape &q) {
+void down(diagonal_cross p, const shape &q) {
     point n = q.north();
     point s = p.south();
-    p.move(n.x - s.x, n.y - s.y + 1);
+    p.move(s.x, s.y + 1);
 }
 
 int main() {
@@ -96,7 +83,7 @@ int main() {
     std::cin.get(); // Ждем нажатия Enter
 
     // Сборка изображения
-    up(tie, body); // Размещаем галстук над телом
+    down(tie, body); // Размещаем галстук над телом
     left(left_ear, body); // Размещаем левое ухо слева от тела
     right(right_ear, body); // Размещаем правое ухо справа от тела
 
