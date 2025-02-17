@@ -1,12 +1,12 @@
 #pragma once
-const int XMAX = 120;
-const int YMAX = 50;
+const int XMAX = 40;
+const int YMAX = 30;
 
 class point {
 public:
     int x, y;
 
-    point(int a = 0, int b = 0) : x(a), y(b) { }
+    explicit point(const int a = 0, const int b = 0) : x(a), y(b) { }
 };
 
 void put_point(int a, int b);
