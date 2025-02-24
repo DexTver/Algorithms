@@ -35,28 +35,24 @@ public:
     }
 };
 
-// Функция для размещения фигуры слева
 void left(shape &p, const shape &q) {
     point w = q.west();
     point e = p.east();
     p.move(w.x - e.x - 1, w.y - e.y);
 }
 
-// Функция для размещения фигуры справа
 void right(shape &p, const shape &q) {
     point e = q.east();
     point w = p.west();
     p.move(e.x - w.x + 1, e.y - w.y);
 }
 
-// Функция для размещения фигуры сверху
 void up(shape &p, const shape &q) {
     point n = q.north();
     point s = p.south();
     p.move(n.x - s.x, n.y - s.y + 1);
 }
 
-// Функция для размещения фигуры снизу
 void down(shape &p, const shape &q) {
     point s = q.south();
     point n = p.north();
