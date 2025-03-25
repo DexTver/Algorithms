@@ -114,10 +114,10 @@ int main() {
         diagonal_cross bad_cross(point(5, 5), -4);
     }
     catch (const NegativeSizeException &ex) {
-        std::cerr << "[Creation Error] " << ex.what() << std::endl;
+        std::cout << "[Creation Error] " << ex.what() << std::endl;
     }
     catch (...) {
-        std::cerr << "[Unknown error while creating bad_cross]\n";
+        std::cout << "[Unknown error while creating bad_cross]\n";
     }
 
 
@@ -128,19 +128,19 @@ int main() {
 
         diagonal_cross left_ear(point(5, 15), 2);
         diagonal_cross right_ear(point(12, 15), 2);
-        diagonal_cross tie(point(22, 15), 3);
+        diagonal_cross tie(point(22, 15), 2);
 
         shape_refresh();
         std::cout << "=== Initial set generated ===\n";
-        std::cin.get();
+        // std::cin.get();
 
         hat.rotate_right();
         brim.resize(2.0);
         face.resize(1.2);
-        left_ear.resize(1.5);
+        tie.resize(1.5);
         shape_refresh();
         std::cout << "=== Transformed shapes ===\n";
-        std::cin.get();
+        // std::cin.get();
 
         face.move(-3, 10);
         up(brim, face);
@@ -151,17 +151,17 @@ int main() {
 
         shape_refresh();
         std::cout << "=== Final composition ===\n";
-        std::cin.get();
+        // std::cin.get();
     }
     catch (const OutOfScreenException &ex) {
-        std::cerr << "[Drawing Error] " << ex.what() << std::endl;
-        std::cerr << "Try reducing size or changing position of the shape.\n";
+        std::cout << "[Drawing Error] " << ex.what() << std::endl;
+        std::cout << "Try reducing size or changing position of the shape.\n";
     }
     catch (const NegativeSizeException &ex) {
-        std::cerr << "[Size Error during execution] " << ex.what() << std::endl;
+        std::cout << "[Size Error during execution] " << ex.what() << std::endl;
     }
     catch (...) {
-        std::cerr << "[Unknown error during shape composition]\n";
+        std::cout << "[Unknown error during shape composition]\n";
     }
 
     screen_destroy();
