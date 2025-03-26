@@ -99,8 +99,7 @@ void right(shape &p, const shape &q) {
 
 static void safe_shape_refresh() {
     screen_clear();
-    // Проходим по всем фигурам
-    for (auto it = shape::shapes.begin(); it != shape::shapes.end();) {
+        for (auto it = shape::shapes.begin(); it != shape::shapes.end();) {
         shape *current = *it;
         try {
             current->draw();
