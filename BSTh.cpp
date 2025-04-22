@@ -1,5 +1,5 @@
 #pragma once
-// #include "pch.h"
+
 #include "BSTh.h"
 int Tree::Count;
 myiter Tree::begin()const {
@@ -15,13 +15,13 @@ myiter Tree::begin()const {
 }
 myiter& myiter::operator++()
 {
-	if (!Ptr) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
-		return *this; //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	if (!Ptr) {
+		return *this;
 	}
-	if (Ptr->L[1]) { //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	if (Ptr->L[1]) {
 		St.push(make_pair(Ptr, 1));
 		Ptr = Ptr->L[1];
-		while (Ptr->L[0]) { //... ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+		while (Ptr->L[0]) {
 			St.push(make_pair(Ptr, 0));
 			Ptr = Ptr->L[0];
 		}
@@ -29,22 +29,20 @@ myiter& myiter::operator++()
 	else {
 		pair<Node*, int> pp(Ptr, 1);
 		while (!St.empty() && pp.second) { pp = St.top(); St.pop(); }
-		if (pp.second) { //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
+		if (pp.second) {
 			Ptr = nullptr;
 		}
-		else Ptr = pp.first; //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		else Ptr = pp.first;
 	}
 	return (*this);
 }
 
-const int FIRSTROW = 0, FIRSTCOL = 60,	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+const int FIRSTROW = 0, FIRSTCOL = 60,
 MAXCOL = 120, OFFSET[] = { 60, 23, 12, 6, 3, 2, 1 },
-MAXROW = FIRSTROW + 9, //18
+MAXROW = FIRSTROW + 9,
 MAXOUT = FIRSTROW + 6, SHIFT = 2;
-//string sb{ "-o+" };
-string SCREEN[MAXROW]; //(MAXROW * MAXCOL);
-//int row = 0, col = 0;
-//void gotoxy(int c, int r) { row = r, col = c; }
+
+string SCREEN[MAXROW];
 
 void clrscr(int f = 1)
 {
@@ -52,7 +50,6 @@ void clrscr(int f = 1)
 		SCREEN[i].clear();
 		SCREEN[i].resize(MAXCOL + 20, '.');
 	}
-	if (f) system("cls");
 }
 
 void showscr()
@@ -71,7 +68,7 @@ int setval(string &s, int pos, int val) {
 
 void Tree::Display(int first)
 {
-	clrscr(first);  // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+	clrscr(first);
 	SCREEN[0] = "BSTh (H=" + to_string(H()) + " n=" + to_string(n)
 		+ ") --------->";
 	if (root) {
@@ -82,15 +79,15 @@ void Tree::Display(int first)
 	showscr();
 }
 
-void Node::Display(int row, int col, int depth) //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ (row,col)
+void Node::Display(int row, int col, int depth)
 {
 	if ((row > MAXROW) || (col < 0) || (col > MAXCOL)) return;
-	//gotoxy(col, row);
+
 	if (row > MAXOUT) {
 		SCREEN[row].replace(col, 3, "+++");
 		return;
 	}
-	//	SCREEN[row].replace(col, col+5, to_string(key));
+
 	try {
 		setval(SCREEN[row], col, key);
 		setval(SCREEN[row + 1], col, h);
@@ -109,105 +106,105 @@ myiter Tree::find(int k)const
 	while (p && p->key != k) p = p->L[p->key > k];
 	return myiter(p);
 }
-pair<myiter, bool> Tree::insert(int k, myiter where)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+pair<myiter, bool> Tree::insert(int k, myiter where)
 {
 	Node *p(root), *q(nullptr);
 	int a{ 0 };
 	MyStack St;
-	//===== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
-	if (!where.Ptr) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		if (!root) { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
-			root = new Node(k); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-			n = 1;		//...ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ = 1
-			return make_pair(myiter(root, move(St)), true);         //...ï¿½ï¿½ï¿½ï¿½ï¿½: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+
+	if (!where.Ptr) {
+		if (!root) {
+			root = new Node(k);
+			n = 1;
+			return make_pair(myiter(root, move(St)), true);
 		}
 	}
-	else {  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	else {
 		p = where.Ptr;
 		St = move(where.St);
 	}
 
-	//===== ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
-	while (p) //  && k != p->key)
+
+	while (p)
 	{
 		a = k > p->key ? 1 : 0;
 		St.push(make_pair(p, a));
 		q = p->L[a];
-		if (q) { //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
-			p = q; //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		if (q) {
+			p = q;
 		}
 		else {
-			p->L[a] = q = new Node(k);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			p->L[a] = q = new Node(k);
 			++n;
-//			p->fixheight();
-//			p = q;
+
+
 			break;
 		}
 	}
-	//		if (cont)	return make_pair(myiter(q), false); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ q. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+
 	int b_old{0};
 	while (!St.empty())
 	{
 		auto pa = St.top(); St.pop();
 		p = pa.first; a = pa.second;
 		int b(p->balancefactor());
-		if(b) { 
+		if(b) {
 			if ((b == 2) || (b == -2))
-			{ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			{
 				--p->h;
 				b /= 2;
-				if (b == b_old) {	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ I: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				if (b == b_old) {
 					p->L[a] = q->L[1 - a];
 					q->L[1 - a] = p;
-				//	++q->h;
+
 					if (p == root)p = root = q;
 				    else St.top().first->L[St.top().second] = p = q;
 					p->fixheight();
 					break;
 			    }
-				else {		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ II: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				else {
 					Node *r(q->L[1 - a]);
 					p->L[a] = r->L[1 - a];
 					q->L[1 - a] = r->L[a];
 					r->L[1 - a] = p;
 					r->L[a] = q;
-				//	r->h += 2;
+
 					if (p == root) p = root = r;
 					else St.top().first->L[St.top().second] = p = r;
 					p->fixheight();
 					break;
 				}
 			}
-			b_old = b; //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+			b_old = b;
 			p->fixheight();
 			q = p;
 		}
-		else break; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		else break;
 	}
 	return make_pair(myiter(p, move(St)), true);
 }
 
-pair<myiter, bool> Tree::erase(int k)	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
+pair<myiter, bool> Tree::erase(int k)
 {
-	//===== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
+
 	MyStack St;
 	Node *p(nullptr), *q(root), *r(nullptr);
 	int a(0), B[] = { -1, +1 };
 	bool cont = (q != nullptr);
-	//===== ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
+
 	while (cont && (k != q->key)) {
-		St.push(make_pair(p, a));//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		St.push(make_pair(p, a));
 		p = q;
 		a = k > q->key;
 		q = q->L[a];
-		if (q == nullptr) cont = false;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+		if (q == nullptr) cont = false;
 	}
-	if (cont) {     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	if (cont) {
 		--n;
-		if (r = q->L[1]) { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½? + ï¿½ï¿½ï¿½. r
-			if (r->L[0]) { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 3: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...
-				St.push(make_pair(p, a));	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		if (r = q->L[1]) {
+			if (r->L[0]) {
+				St.push(make_pair(p, a));
 				p = q;
 				a = 1;
 				do {
@@ -215,13 +212,13 @@ pair<myiter, bool> Tree::erase(int k)	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿
 					p = r;
 					r = r->L[a = 0];
 				} while (r->L[0]);
-				q->key = r->key; // ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...
+				q->key = r->key;
 				p->L[0] = r->L[1];
 				p->fixheight();
 				q = r;
 			}
 			else {
-				r->L[0] = q->L[0]; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+				r->L[0] = q->L[0];
 				if (p) p->L[a] = r;
 				else root = r;
 				St.pop();
@@ -231,7 +228,7 @@ pair<myiter, bool> Tree::erase(int k)	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿
 		}
 		else {
 			if (p) {
-				p->L[a] = q->L[0];  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+				p->L[a] = q->L[0];
 				p->fixheight();
 			}
 			else {
@@ -240,47 +237,47 @@ pair<myiter, bool> Tree::erase(int k)	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿
 			}
 		}
 		q->L[0] = q->L[1] = nullptr;
-		delete q;    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-	   //===== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =====
-		while (cont) { //ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		delete q;
+
+		while (cont) {
 			cont = false;
-			if (!p) break; // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			if (!p) break;
 			int b(p->balancefactor());
-			if (b != 0) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			if (b != 0) {
 				cont = true;
-				if (abs(b) < 2) { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½...
+				if (abs(b) < 2) {
 					auto pp = St.top();
-					St.pop();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					St.pop();
 					p = pp.first; a = pp.second;
 				}
-				else { // p->b == -B[a]: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				else {
 					q = r = p->L[1 - a];
 					int rb(r->balancefactor());
-					if (rb == -b/2) { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					if (rb == -b/2) {
 						r = r->L[a];
 						p->L[1 - a] = r->L[a];
 						q->L[a] = r->L[1 - a];
 						r->L[a] = p;
 						r->L[1 - a] = q;
 					}
-					else { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1 ï¿½ 3: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					else {
 						p->L[1 - a] = r->L[a];
 						r->L[a] = p;
-						if (rb == 0) cont = false;     //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 3: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½
+						if (rb == 0) cont = false;
 					}
 					--p->h;
 					r->fixheight();
 					auto pp = St.top();
-					St.pop();     //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					St.pop();
 					p = pp.first; a = pp.second;
-					if (p) p->L[a] = r;     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					if (p) p->L[a] = r;
 					else root = r;
 				}
 			}
-		} //while(cont)... - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		return make_pair(myiter(q), true);	//ï¿½ï¿½ï¿½ï¿½ï¿½: "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+		}
+		return make_pair(myiter(q), true);
 	}
-	else return make_pair(myiter(q), false); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+	else return make_pair(myiter(q), false);
 }
 
 Tree & Tree::operator |= (const Tree & rgt) {

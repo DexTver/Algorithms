@@ -1,4 +1,3 @@
-// main.cpp
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -18,8 +17,6 @@ static vector<int> genSet() {
     sort(s.begin(), s.end());
     return s;
 }
-
-// Доп. операции над последовательностями
 
 // MERGE: слияние двух упорядоченных последовательностей с сохранением дубликатов
 template<typename Seq>
