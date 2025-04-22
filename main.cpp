@@ -1,216 +1,126 @@
+// main.cpp
 #include <iostream>
-#include <exception>
-#include <string>
-#include "screen.h"
-#include "shape.h"
+#include <vector>
+#include <algorithm>
+#include <ctime>
+#include "BSTh.h"
 
-class NegativeSizeException : public std::exception {
-    std::string msg;
+using namespace std;
 
-public:
-    explicit NegativeSizeException(const std::string &m) : msg(m) {
+// Генерация упорядоченного вектора из 10 уникальных случайных чисел <100
+static vector<int> genSet() {
+    vector<int> s;
+    while (s.size() < 10) {
+        int x = rand() % 100;
+        if (find(s.begin(), s.end(), x) == s.end())
+            s.push_back(x);
     }
-
-    const char *what() const noexcept override {
-        return msg.c_str();
-    }
-};
-
-class OutOfScreenException : public std::exception {
-    std::string msg;
-
-public:
-    explicit OutOfScreenException(const std::string &m) : msg(m) {
-    }
-
-    const char *what() const noexcept override {
-        return msg.c_str();
-    }
-};
-
-class diagonal_cross : public shape {
-protected:
-    point center;
-    int size;
-
-public:
-    diagonal_cross(point c, int s) : center(c), size(s) {
-        if (size <= 0) {
-            throw NegativeSizeException("diagonal_cross: size must be positive");
-        }
-    }
-
-    point north() const override { return point(center.x, center.y + size); }
-    point south() const override { return point(center.x, center.y - size); }
-    point east() const override { return point(center.x + size, center.y); }
-    point west() const override { return point(center.x - size, center.y); }
-    point neast() const override { return point(center.x + size, center.y - size); }
-    point seast() const override { return point(center.x + size, center.y + size); }
-    point nwest() const override { return point(center.x - size, center.y - size); }
-    point swest() const override { return point(center.x - size, center.y + size); }
-
-    void draw() override {
-        if (!on_screen(nwest().x, nwest().y) ||
-            !on_screen(neast().x, neast().y) ||
-            !on_screen(seast().x, seast().y) ||
-            !on_screen(swest().x, swest().y)) {
-            throw OutOfScreenException("diagonal_cross: figure is out of screen bounds");
-        }
-        put_line(nwest(), seast());
-        put_line(neast(), swest());
-    }
-
-    void move(int dx, int dy) override {
-        center.x += dx;
-        center.y += dy;
-    }
-
-    void resize(double factor) override {
-        if (factor <= 0) {
-            throw NegativeSizeException("diagonal_cross: resize factor must be > 0");
-        }
-        size = static_cast<int>(size * factor);
-    }
-};
-
-void up(shape &p, const shape &q) {
-    point n = q.north();
-    point s = p.south();
-    p.move(n.x - s.x, n.y - s.y + 1);
+    sort(s.begin(), s.end());
+    return s;
 }
 
-void down(shape &p, const shape &q) {
-    point s = q.south();
-    point n = p.north();
-    p.move(s.x - n.x, s.y - n.y - 1);
+// Доп. операции над последовательностями
+
+// MERGE: слияние двух упорядоченных последовательностей с сохранением дубликатов
+template<typename Seq>
+Seq MERGE(const Seq& s1, const Seq& s2) {
+    Seq res;
+    merge(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(res));
+    return res;
 }
 
-void left(shape &p, const shape &q) {
-    point w = q.west();
-    point e = p.east();
-    p.move(w.x - e.x - 1, w.y - e.y);
+// EXCL: удаление подпоследовательности из основной
+template<typename Seq>
+Seq EXCL(const Seq& mainSeq, const Seq& subSeq) {
+    Seq res(mainSeq);
+    auto it = search(res.begin(), res.end(), subSeq.begin(), subSeq.end());
+    if (it != res.end())
+        res.erase(it, next(it, subSeq.size()));
+    return res;
 }
 
-void right(shape &p, const shape &q) {
-    point e = q.east();
-    point w = p.west();
-    p.move(e.x - w.x + 1, e.y - w.y);
-}
-
-static void safe_shape_refresh() {
-    screen_clear();
-        for (auto it = shape::shapes.begin(); it != shape::shapes.end();) {
-        shape *current = *it;
-        try {
-            current->draw();
-            ++it;
-        } catch (std::exception &ex) {
-            std::cout << "[Draw Error] " << ex.what() << std::endl;
-            auto next = it;
-            ++next;
-            delete current;
-            it = next;
-        }
-        catch (...) {
-            std::cout << "[Unknown Draw Error]" << std::endl;
-            auto next = it;
-            ++next;
-            delete current;
-            it = next;
-        }
+// CHANGE: замена части последовательности на другую с заданной позиции
+template<typename Seq>
+Seq CHANGE(const Seq& mainSeq, size_t pos, const Seq& subSeq) {
+    Seq res(mainSeq);
+    if (pos <= res.size()) {
+        auto it = next(res.begin(), pos);
+        res.erase(it, next(it, min(subSeq.size(), res.size() - pos)));
+        res.insert(it, subSeq.begin(), subSeq.end());
     }
-    screen_refresh();
+    return res;
 }
 
 int main() {
-#ifdef LOCAL
-    freopen("output.out", "w", stdout);
-#endif
-    screen_init();
+    setlocale(LC_ALL, "Russian");
+    srand(static_cast<unsigned>(time(nullptr)));
 
-    rectangle hat(point(0, 0), point(14, 5));
-    rectangle face(point(16, 0), point(28, 8));
-    line brim(point(20, 10), 17);
+    // 1. Генерация пяти множеств A, B, C, D, E
+    auto A = genSet();
+    auto B = genSet();
+    auto C = genSet();
+    auto D = genSet();
+    auto E = genSet();
 
-    diagonal_cross *left_ear = nullptr;
-    diagonal_cross *right_ear = nullptr;
-    diagonal_cross *tie = nullptr;
-    diagonal_cross *bad_cross1 = nullptr;
-    diagonal_cross *bad_cross2 = nullptr;
-    diagonal_cross *bad_cross3 = nullptr;
-    diagonal_cross *bad_cross4 = nullptr;
+    Tree tA(A.begin(), A.end()),
+         tB(B.begin(), B.end()),
+         tC(C.begin(), C.end()),
+         tD(D.begin(), D.end()),
+         tE(E.begin(), E.end());
 
-    try {
-        left_ear = new diagonal_cross(point(5, 15), 2);
-    } catch (const std::exception &ex) {
-        std::cout << "[Creation Error] left_ear: " << ex.what() << std::endl;
-    }
-    try {
-        right_ear = new diagonal_cross(point(12, 15), 2);
-    } catch (const std::exception &ex) {
-        std::cout << "[Creation Error] right_ear: " << ex.what() << std::endl;
-    }
-    try {
-        tie = new diagonal_cross(point(22, 15), 3);
-    } catch (const std::exception &ex) {
-        std::cout << "[Creation Error] tie: " << ex.what() << std::endl;
-    }
-    try {
-        bad_cross1 = new diagonal_cross(point(5, 5), -4);
-    } catch (const std::exception &ex) {
-        std::cout << "[Creation Error] bad_cross1: " << ex.what() << std::endl;
-    }
-    try {
-        bad_cross2 = new diagonal_cross(point(2, 2), 9999);
-    } catch (const std::exception &ex) {
-        std::cout << "[Creation Error] bad_cross2: " << ex.what() << std::endl;
-    }
-    try {
-        bad_cross3 = new diagonal_cross(point(5, 20), 2);
-    } catch (const std::exception &ex) {
-        std::cout << "[Creation Error] bad_cross3: " << ex.what() << std::endl;
-    }
-    try {
-        bad_cross4 = new diagonal_cross(point(10, 20), 2);
-    } catch (const std::exception &ex) {
-        std::cout << "[Creation Error] bad_cross4: " << ex.what() << std::endl;
-    }
+    cout << "Исходные множества:\n";
+    tA.Display(); tB.Display(); tC.Display(); tD.Display(); tE.Display();
 
-    safe_shape_refresh();
-    std::cout << "=== Generated... ===\n";
+    // 2. T1 = A ∩ B
+    Tree T1;
+    set_intersection(tA.begin(), tA.end(), tB.begin(), tB.end(),
+                     outinserter(T1, myiter(nullptr)));
+    cout << "\nT1 = A ∩ B:\n"; T1.Display();
 
-    hat.rotate_right();
-    brim.resize(2.0);
-    face.resize(1.2);
+    // 3. T2 = T1 ∪ C
+    Tree T2;
+    set_union(T1.begin(), T1.end(), tC.begin(), tC.end(),
+              outinserter(T2, myiter(nullptr)));
+    cout << "\nT2 = T1 ∪ C:\n"; T2.Display();
 
-    try {
-        if (bad_cross3) {
-            bad_cross3->resize(-3.0);
-        }
-    } catch (const std::exception &ex) {
-        std::cout << "[Resize Error] bad_cross3: " << ex.what() << "\n";
-    }
-    try {
-        if (bad_cross3) {
-            bad_cross3->resize(100);
-        }
-    } catch (const std::exception &ex) {
-        std::cout << "[Resize Error] bad_cross3: " << ex.what() << "\n";
-    }
+    // 4. T3 = D ⊕ E
+    Tree T3;
+    set_symmetric_difference(tD.begin(), tD.end(),
+                             tE.begin(), tE.end(),
+                             outinserter(T3, myiter(nullptr)));
+    cout << "\nT3 = D ⊕ E:\n"; T3.Display();
 
-    safe_shape_refresh();
-    std::cout << "=== Prepared... ===\n";
+    // 5. Итог = T2 ∪ T3
+    Tree T;
+    set_union(T2.begin(), T2.end(), T3.begin(), T3.end(),
+              outinserter(T, myiter(nullptr)));
+    cout << "\nИтог = T2 ∪ T3:\n"; T.Display();
 
-    face.move(-3, 10);
-    up(brim, face);
-    up(hat, brim);
-    if (tie) down(*tie, face);
-    if (left_ear) left(*left_ear, face);
-    if (right_ear) right(*right_ear, face);
-    if (bad_cross4) bad_cross4->move(100, 100);
-    safe_shape_refresh();
-    std::cout << "=== Ready! ===\n";
+    // --- Доп. операции над последовательностями ---
+    cout << "\nA: "; for (int x : A) cout << x << " "; cout << "\n";
+    cout << "B: "; for (int x : B) cout << x << " "; cout << "\n";
 
-    screen_destroy();
+    auto merged = MERGE(A, B);
+    cout << "MERGE(A,B): ";
+    for (int x : merged) cout << x << " "; cout << "\n";
+    Tree tM(merged.begin(), merged.end());
+    cout << "Дерево из MERGE:\n"; tM.Display();
+
+    vector<int> subExcl(merged.begin() + 2, merged.begin() + 5);
+    auto excl = EXCL(merged, subExcl);
+    cout << "EXCL (удалили subseq [";
+    for (int x : subExcl) cout << x << " ";
+    cout << "]): ";
+    for (int x : excl) cout << x << " "; cout << "\n";
+    Tree tE2(excl.begin(), excl.end());
+    cout << "Дерево из EXCL:\n"; tE2.Display();
+
+    vector<int> subChange{100,200,300};
+    auto changed = CHANGE(merged, 3, subChange);
+    cout << "CHANGE (с позиции 3 -> {100,200,300}): ";
+    for (int x : changed) cout << x << " "; cout << "\n";
+    Tree tC2(changed.begin(), changed.end());
+    cout << "Дерево из CHANGE:\n"; tC2.Display();
+
     return 0;
 }
