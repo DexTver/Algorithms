@@ -369,7 +369,7 @@ public:
 //──────────────────────────────────────────────────────────────────────────────
 int main(){
     using std::cout;
-    cout << "====================== SET OPERATIONS ======================";
+    cout << "============ SET OPERATIONS ============\n";
     // Инициализация множеств (вектора могут содержать дубликаты)
     DDP A = DDP::randomObject(10, 15);
     DDP B = DDP::randomObject(10, 15);
@@ -377,46 +377,39 @@ int main(){
     DDP D = DDP::randomObject(10, 15);
     DDP E = DDP::randomObject(10, 15);
 
-    cout << "A: "; A.printSeq();
-    cout << "B: "; B.printSeq();
-    cout << "C: "; C.printSeq();
-    cout << "D: "; D.printSeq();
-    cout << "E: "; E.printSeq();
+    cout << "A: "; A.printSeq(); A.printTree();
+    cout << "\nB: "; B.printSeq(); B.printTree();
+    cout << "\nC: "; C.printSeq(); C.printTree();
+    cout << "\nD: "; D.printSeq(); D.printTree();
+    cout << "\nE: "; E.printSeq(); E.printTree();
 
-    //  Выражение  T = (A ∩ B) ∪ C ∪ (D ⊕ E)
-    DDP T = A;              // стартуем с A
-    T.intersectWith(B);    // A ∩ B
-    T.unionWith(C);        // (A ∩ B) ∪ C
-    {
-        DDP tmp = D;       // (D ⊕ E)
-        tmp.symDiffWith(E);
-        T.unionWith(tmp);  // финальное объединение
-    }
+    //  T = (A ∩ B) ∪ C ∪ (D ⊕ E)
+    DDP T = A;
+    T.intersectWith(B); // A ∩ B
+    T.unionWith(C);     // (A ∩ B) ∪ C
+    DDP tmp = D;
+    tmp.symDiffWith(E); // D ⊕ E
+    T.unionWith(tmp);   // ((A ∩ B) ∪ C) ∪ (D ⊕ E)
 
-    cout << "--- Итоговое множество T ---";
-    T.printTree();
-    cout << "T sequence (перестроенная): "; T.printSeq();
-    cout << "|T| = " << T.cardinality() << " (уникальных элементов)";
+    cout << "\nT = A & B | C | (D ^ E)";
+    cout << "\nT: "; T.printSeq(); T.printTree();
 
-    cout << "================ SEQUENCE OPERATIONS ================";
+    cout << "========== SEQUENCE OPERATIONS ==========";
     // MERGE
-    DDP S1({1,3,5,7});
-    DDP S2({2,4,6,8,8});
-    cout << "S1: "; S1.printSeq();
-    cout << "S2: "; S2.printSeq();
+    DDP S1 = DDP::randomObject(10, 15);
+    DDP S2 = DDP::randomObject(10, 15);
+    cout << "\nS1: "; S1.printSeq(); S1.printTree();
+    cout << "\nS2: "; S2.printSeq(); S2.printTree();
     S1.MERGE(S2);
-    cout << "MERGE(S1,S2) => S1: "; S1.printSeq();
+    cout << "\nS1.MERGE(S1,S2) => S1:\n"; S1.printSeq(); S1.printTree();
 
     // EXCL – удалим подпоследовательность {4,5,6}
     std::vector<int> subseq = {4,5,6};
     S1.EXCL(subseq);
-    cout << "EXCL{4,5,6} => S1: "; S1.printSeq();
+    cout << "\nEXCL{4,5,6} => S1:\n"; S1.printSeq(); S1.printTree();
 
     // CHANGE – на позиции 2 (0‑based) заменить 3 элемента на {99,100}
     S1.CHANGE(2,3,{99,100});
-    cout << "CHANGE pos=2 len=3 -> {99,100} => S1: "; S1.printSeq();
-
-    cout << "Финальное дерево S1 после операций последовательности:";
-    S1.printTree();
+    cout << "\nCHANGE pos=2 len=3 -> {99,100} => S1:\n"; S1.printSeq(); S1.printTree();
     return 0;
 }
