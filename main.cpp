@@ -195,43 +195,49 @@ public:
         rebuildSeqRandom();
     }
 
-    void MERGE(const DDP &o) {
-        std::vector<int> a, b;
-        for (const auto *p: seq)a.push_back(p->key);
-        for (const auto *p: o.seq)b.push_back(p->key);
-        std::vector<int> r;
-        std::merge(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
-        clear();
-        for (const int k: r)add(k);
+    static DDP MERGE(const DDP &a, const DDP &b) {
+        std::vector<int> keys;
+        keys.reserve(a.seq.size() + b.seq.size());
+        for (const auto *p: a.seq) keys.push_back(p->key);
+        for (const auto *p: b.seq) keys.push_back(p->key);
+        std::sort(keys.begin(), keys.end());
+        DDP res;
+        for (const int k: keys) res.add(k);
+        return res;
     }
 
-    void EXCL(const std::vector<int> &sub) {
-        if (sub.empty())return;
-        for (size_t i = 0; i + sub.size() <= seq.size(); ++i) {
+    bool EXCL(const DDP &sub) {
+        const size_t n = sub.seq.size();
+        if (n == 0 || n > seq.size()) return false;
+        for (size_t i = 0; i + n <= seq.size(); ++i) {
             bool ok = true;
-            for (size_t j = 0; j < sub.size(); ++j)
-                if (seq[i + j]->key != sub[j]) {
+            for (size_t j = 0; j < n; ++j)
+                if (seq[i + j]->key != sub.seq[j]->key) {
                     ok = false;
                     break;
                 }
             if (ok) {
-                seq.erase(seq.begin() + i, seq.begin() + i + sub.size());
+                seq.erase(seq.begin() + i, seq.begin() + i + n);
                 rebuildTree();
-                return;
+                return true;
             }
         }
+        return false;
     }
 
-    void CHANGE(const size_t pos, const size_t len, const std::vector<int> &ns) {
-        if (pos > seq.size())return;
-        const size_t end = std::min(seq.size(), pos + len);
-        seq.erase(seq.begin() + pos, seq.begin() + end);
-        for (size_t i = 0; i < ns.size(); ++i) {
-            Node *r = nullptr;
-            root = insert(root, ns[i], &r);
-            seq.insert(seq.begin() + pos + i, r);
-        }
-        rebuildTree();
+    void CHANGE(const size_t pos, const DDP &repl) {
+        std::vector<int> keys;
+        keys.reserve(seq.size());
+        for (const auto *p: seq) keys.push_back(p->key);
+        if (pos > keys.size()) return;
+        const size_t eraseLen = std::min(repl.seq.size(), keys.size() - pos);
+        keys.erase(keys.begin() + pos, keys.begin() + pos + eraseLen);
+        std::vector<int> replKeys;
+        replKeys.reserve(repl.seq.size());
+        for (const auto *p: repl.seq) replKeys.push_back(p->key);
+        keys.insert(keys.begin() + pos, replKeys.begin(), replKeys.end());
+        clear();
+        for (const int k: keys) add(k);
     }
 
     void printSeq(std::ostream &os = std::cout) const {
@@ -354,31 +360,43 @@ int main() {
     T.printTree();
 
     cout << "\n========== SEQUENCE OPERATIONS ==========";
-    // MERGE
-    DDP S1 = DDP::genSequence(10, 15);
-    DDP S2 = DDP::genSequence(10, 15);
-    cout << "\nS1: ";
-    S1.printSeq();
-    S1.printTree();
-    cout << "\nS2: ";
-    S2.printSeq();
-    S2.printTree();
-    S1.MERGE(S2);
-    cout << "\nS1.MERGE(S1,S2) => S1:\n";
-    S1.printSeq();
-    S1.printTree();
+    DDP M1 = DDP::genSequence(10, 15);
+    DDP M2 = DDP::genSequence(10, 15);
+    cout << "\nM1: ";
+    M1.printSeq();
+    M1.printTree();
+    cout << "\nM2: ";
+    M2.printSeq();
+    M2.printTree();
+    DDP M = DDP::MERGE(M1, M2);
+    cout << "\nMERGE(M1,M2):\n";
+    M.printSeq();
+    M.printTree();
 
-    // EXCL – удалим подпоследовательность {4,5,6}
-    const std::vector<int> subseq = {4, 5, 6};
-    S1.EXCL(subseq);
-    cout << "\nEXCL{4,5,6} => S1:\n";
-    S1.printSeq();
-    S1.printTree();
+    DDP E1({0,1,2,3,4,5,6,7,8});
+    DDP E2({3,4,5});
+    cout << "\nE1: ";
+    E1.printSeq();
+    E1.printTree();
+    cout << "\nE2: ";
+    E2.printSeq();
+    E2.printTree();
+    if (E1.EXCL(E2)) {
+        cout << "\nE1 EXCL E2:\n";
+        E1.printSeq();
+        E1.printTree();
+    }else cout << "\nE2 not found in E1!\n";
 
-    // CHANGE – на позиции 2 (0‑based) заменить 3 элемента на {99,100}
-    S1.CHANGE(2, 3, {99, 100});
-    cout << "\nCHANGE pos=2 len=3 -> {99,100} => S1:\n";
-    S1.printSeq();
-    S1.printTree();
+    DDP CH1 = DDP::genSequence(10, 15);
+    DDP CH2 = DDP::genSequence(2, 100);
+    constexpr int pos = 2;
+    cout << "\nCH1: ";
+    CH1.printSeq();
+    CH1.printTree();
+    CH1.CHANGE(pos, CH2);
+    cout << "\nCH1 CHANGE from pos=" << pos << " by ";
+    CH2.printSeq();
+    CH1.printSeq();
+    CH1.printTree();
     return 0;
 }
