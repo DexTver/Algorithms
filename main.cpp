@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <stdexcept>
 
 class DDP {
     struct Node {
@@ -206,9 +207,11 @@ public:
         return res;
     }
 
-    bool EXCL(const DDP &sub) {
+    void EXCL(const DDP &sub) {
         const size_t n = sub.seq.size();
-        if (n == 0 || n > seq.size()) return false;
+        if (n == 0 || n > seq.size())
+            throw std::runtime_error("Subsequence not found");
+
         for (size_t i = 0; i + n <= seq.size(); ++i) {
             bool ok = true;
             for (size_t j = 0; j < n; ++j)
@@ -219,18 +222,23 @@ public:
             if (ok) {
                 seq.erase(seq.begin() + i, seq.begin() + i + n);
                 rebuildTree();
-                return true;
+                return;
             }
         }
-        return false;
+        throw std::runtime_error("Subsequence not found");
     }
 
     void CHANGE(const size_t pos, const DDP &repl) {
+        if (pos >= seq.size())
+            throw std::out_of_range("Position is outside the sequence");
+
         std::vector<int> keys;
         keys.reserve(seq.size());
         for (const auto *p: seq) keys.push_back(p->key);
-        if (pos > keys.size()) return;
+
         const size_t eraseLen = std::min(repl.seq.size(), keys.size() - pos);
+        if (eraseLen == 0 && repl.seq.empty())
+            throw std::runtime_error("Nothing to change: both erase length and replacement are empty");
         keys.erase(keys.begin() + pos, keys.begin() + pos + eraseLen);
         std::vector<int> replKeys;
         replKeys.reserve(repl.seq.size());
@@ -241,22 +249,19 @@ public:
     }
 
     void printSeq(std::ostream &os = std::cout) const {
-        for (const auto *p: seq)os << p->key << " ";
-        os << "\n";
+        if (seq.empty()) throw std::runtime_error("Sequence is empty");
+        for (const auto *p: seq) os << p->key << ' ';
+        os << '\n';
     }
 
     void printTree(std::ostream &os = std::cout) const {
         const int h = height(root);
-        if (!h) {
-            os << "<empty>\n";
-            return;
-        }
-        const int w = (1 << h) * 2;
-        const int rows = h * 2;
+        if (!h) throw std::runtime_error("Tree is empty");
+        const int w = (1 << h) * 2, rows = h * 2;
         std::vector<std::string> mat(rows, std::string(w, '.'));
         fillMatrix(root, w / 2, 0, w / 2, mat);
         os << "BSTh(H=" << h << " n=" << cardinality() << ") ----->\n";
-        for (auto &ln: mat)os << ln << "\n";
+        for (auto &ln: mat) os << ln << '\n';
     }
 
 private:
@@ -314,6 +319,17 @@ public:
 
 int main() {
     using std::cout;
+
+    auto safePrint = [&](const std::string &label, const DDP &ds) {
+        cout << label;
+        try {
+            ds.printSeq();
+            ds.printTree();
+        } catch (const std::exception &ex) {
+            cout << "Error: " << ex.what() << '\n';
+        }
+    };
+
     cout << "============ SET OPERATIONS ============\n";
     DDP A = DDP::genUniqueSet(10, 15);
     DDP B = DDP::genUniqueSet(10, 15);
@@ -321,82 +337,57 @@ int main() {
     DDP D = DDP::genUniqueSet(10, 15);
     DDP E = DDP::genUniqueSet(10, 15);
 
-    cout << "A: ";
-    A.printSeq();
-    A.printTree();
-    cout << "\nB: ";
-    B.printSeq();
-    B.printTree();
-    cout << "\nC: ";
-    C.printSeq();
-    C.printTree();
-    cout << "\nD: ";
-    D.printSeq();
-    D.printTree();
-    cout << "\nE: ";
-    E.printSeq();
-    E.printTree();
+    safePrint("A:\n", A);
+    safePrint("\nB:\n", B);
+    safePrint("\nC:\n", C);
+    safePrint("\nD:\n", D);
+    safePrint("\nE:\n", E);
 
     DDP T = A;
     T.intersectWith(B);
-    cout << "\nA ∩ B: ";
-    T.printSeq();
-    T.printTree();
+    safePrint("\nA ∩ B:\n", T);
 
     T.unionWith(C);
-    cout << "\n(A ∩ B) ∪ C: ";
-    T.printSeq();
-    T.printTree();
+    safePrint("\n(A ∩ B) ∪ C:\n", T);
 
     DDP tmp = D;
     tmp.symDiffWith(E);
-    cout << "\nD ⊕ E: ";
-    tmp.printSeq();
-    tmp.printTree();
+    safePrint("\nD ⊕ E:\n", tmp);
 
     T.unionWith(tmp);
-    cout << "\n((A ∩ B) ∪ C) ∪ (D ⊕ E): ";
-    T.printSeq();
-    T.printTree();
+    safePrint("\n((A ∩ B) ∪ C) ∪ (D ⊕ E):\n", T);
 
     cout << "\n========== SEQUENCE OPERATIONS ==========";
     DDP M1 = DDP::genSequence(10, 15);
     DDP M2 = DDP::genSequence(10, 15);
-    cout << "\nM1: ";
-    M1.printSeq();
-    M1.printTree();
-    cout << "\nM2: ";
-    M2.printSeq();
-    M2.printTree();
+    safePrint("\nM1:\n", M1);
+    safePrint("\nM2:\n", M2);
     DDP M = DDP::MERGE(M1, M2);
-    cout << "\nMERGE(M1,M2):\n";
-    M.printSeq();
-    M.printTree();
+    safePrint("\nMERGE(M1,M2):\n", M);
 
-    DDP E1({0,1,2,3,4,5,6,7,8});
-    DDP E2({3,4,5});
-    cout << "\nE1: ";
-    E1.printSeq();
-    E1.printTree();
-    cout << "\nE2: ";
-    E2.printSeq();
-    E2.printTree();
-    if (E1.EXCL(E2)) {
-        cout << "\nE1 EXCL E2:\n";
-        E1.printSeq();
-        E1.printTree();
-    }else cout << "\nE2 not found in E1!\n";
+    DDP E1({0, 1, 2, 3, 4, 5, 6, 7, 8});
+    DDP E2({3, 5, 5});
+    safePrint("\nE1:\n", E1);
+    safePrint("\nE2:\n", E2);
+    try {
+        E1.EXCL(E2);
+        safePrint("\nE1 EXCL E2:\n", E1);
+    } catch (const std::exception &ex) {
+        cout << "\nError: " << ex.what() << '\n';
+    }
 
     DDP CH1 = DDP::genSequence(10, 15);
-    DDP CH2 = DDP::genSequence(2, 100);
-    constexpr int pos = 2;
-    cout << "\nCH1: ";
-    CH1.printSeq();
-    CH1.printTree();
-    CH1.CHANGE(pos, CH2);
-    cout << "\nCH1 CHANGE from pos=" << pos << " by ";
+    DDP CH2 = DDP::genSequence(3, 100);
+    constexpr int ind = 10;
+    safePrint("\nCH1:\n", CH1);
+    cout << "\nCH1 CHANGE from index " << ind << " by ";
     CH2.printSeq();
-    CH1.printSeq();
-    CH1.printTree();
+    try {
+        CH1.CHANGE(ind, CH2);
+        safePrint("", CH1);
+    } catch (const std::exception &ex) {
+        cout << "Error: " << ex.what() << '\n';
+    }
+
     return 0;
 }
