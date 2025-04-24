@@ -289,7 +289,6 @@ private:
 public:
     ~DDP() { clear(); }
 
-    // generator
 private:
     static std::vector<int> sampleUnique(const int cnt, const int univ) {
         if (univ < cnt) throw std::invalid_argument("universe < power");
@@ -366,7 +365,7 @@ int main() {
     safePrint("\nMERGE(M1,M2):\n", M);
 
     DDP E1({0, 1, 2, 3, 4, 5, 6, 7, 8});
-    DDP E2({3, 5, 5});
+    DDP E2({3, 4, 5});
     safePrint("\nE1:\n", E1);
     safePrint("\nE2:\n", E2);
     try {
@@ -378,7 +377,7 @@ int main() {
 
     DDP CH1 = DDP::genSequence(10, 15);
     DDP CH2 = DDP::genSequence(3, 100);
-    constexpr int ind = 10;
+    constexpr int ind = 2;
     safePrint("\nCH1:\n", CH1);
     cout << "\nCH1 CHANGE from index " << ind << " by ";
     CH2.printSeq();
