@@ -367,22 +367,56 @@ public:
 //──────────────────────────────────────────────────────────────────────────────
 //  Demo (можно убрать main при встраивании в библиотеку)
 //──────────────────────────────────────────────────────────────────────────────
-int main() {
-    DDP a({1, 5, 8, 2, 7, 9, 3, 11});
-    DDP b = DDP::randomObject(10, 15);
+int main(){
+    using std::cout;
+    cout << "====================== SET OPERATIONS ======================";
+    // Инициализация множеств (вектора могут содержать дубликаты)
+    DDP A = DDP::randomObject(10, 15);
+    DDP B = DDP::randomObject(10, 15);
+    DDP C = DDP::randomObject(10, 15);
+    DDP D = DDP::randomObject(10, 15);
+    DDP E = DDP::randomObject(10, 15);
 
-    std::cout << "A sequence: ";
-    a.printSeq();
-    a.printTree();
+    cout << "A: "; A.printSeq();
+    cout << "B: "; B.printSeq();
+    cout << "C: "; C.printSeq();
+    cout << "D: "; D.printSeq();
+    cout << "E: "; E.printSeq();
 
-    std::cout << "B sequence: ";
-    b.printSeq();
-    b.printTree();
+    //  Выражение  T = (A ∩ B) ∪ C ∪ (D ⊕ E)
+    DDP T = A;              // стартуем с A
+    T.intersectWith(B);    // A ∩ B
+    T.unionWith(C);        // (A ∩ B) ∪ C
+    {
+        DDP tmp = D;       // (D ⊕ E)
+        tmp.symDiffWith(E);
+        T.unionWith(tmp);  // финальное объединение
+    }
 
-    a.unionWith(b);
-    std::cout << "Union (A <- A∪B) seq: ";
-    a.printSeq();
-    a.printTree();
+    cout << "--- Итоговое множество T ---";
+    T.printTree();
+    cout << "T sequence (перестроенная): "; T.printSeq();
+    cout << "|T| = " << T.cardinality() << " (уникальных элементов)";
 
+    cout << "================ SEQUENCE OPERATIONS ================";
+    // MERGE
+    DDP S1({1,3,5,7});
+    DDP S2({2,4,6,8,8});
+    cout << "S1: "; S1.printSeq();
+    cout << "S2: "; S2.printSeq();
+    S1.MERGE(S2);
+    cout << "MERGE(S1,S2) => S1: "; S1.printSeq();
+
+    // EXCL – удалим подпоследовательность {4,5,6}
+    std::vector<int> subseq = {4,5,6};
+    S1.EXCL(subseq);
+    cout << "EXCL{4,5,6} => S1: "; S1.printSeq();
+
+    // CHANGE – на позиции 2 (0‑based) заменить 3 элемента на {99,100}
+    S1.CHANGE(2,3,{99,100});
+    cout << "CHANGE pos=2 len=3 -> {99,100} => S1: "; S1.printSeq();
+
+    cout << "Финальное дерево S1 после операций последовательности:";
+    S1.printTree();
     return 0;
 }
