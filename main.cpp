@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <stdexcept>
 
 class DDP {
     struct Node {
@@ -7,7 +6,7 @@ class DDP {
         Node *l, *r;
         int h;
 
-        explicit Node(const int k): key(k), l(nullptr), r(nullptr), h(1) {
+        explicit Node(const int k) : key(k), l(nullptr), r(nullptr), h(1) {
         }
     };
 
@@ -318,6 +317,7 @@ public:
 
 int main() {
     using std::cout;
+    freopen("in.txt", "w", stdout);
 
     auto safePrint = [&](const std::string &label, const DDP &ds) {
         cout << label;
@@ -329,64 +329,37 @@ int main() {
         }
     };
 
-    cout << "============ SET OPERATIONS ============\n";
-    DDP A = DDP::genUniqueSet(10, 15);
-    DDP B = DDP::genUniqueSet(10, 15);
-    DDP C = DDP::genUniqueSet(10, 15);
-    DDP D = DDP::genUniqueSet(10, 15);
-    DDP E = DDP::genUniqueSet(10, 15);
+    for (int len = 10; len < 20; ++len) {
+        int univ = len * 3 / 2;
+        auto start = std::chrono::high_resolution_clock::now();
+        DDP A = DDP::genUniqueSet(len, univ);
+        DDP B = DDP::genUniqueSet(len, univ);
+        DDP C = DDP::genUniqueSet(len, univ);
+        DDP D = DDP::genUniqueSet(len, univ);
+        DDP E = DDP::genUniqueSet(len, univ);
 
-    safePrint("A:\n", A);
-    safePrint("\nB:\n", B);
-    safePrint("\nC:\n", C);
-    safePrint("\nD:\n", D);
-    safePrint("\nE:\n", E);
+        DDP T = A;
+        T.intersectWith(B);
+        T.unionWith(C);
+        DDP tmp = D;
+        tmp.symDiffWith(E);
+        T.unionWith(tmp);
 
-    DDP T = A;
-    T.intersectWith(B);
-    safePrint("\nA ∩ B:\n", T);
+//        DDP M1 = DDP::genSequence(len, univ);
+//        DDP M2 = DDP::genSequence(len, univ);
+//        DDP M = DDP::MERGE(M1, M2);
 
-    T.unionWith(C);
-    safePrint("\n(A ∩ B) ∪ C:\n", T);
+//        DDP E1({0, 1, 2, 3, 4, 5, 6, 7, 8});
+//        DDP E2({3, 4, 5});
+//        E1.EXCL(E2);
 
-    DDP tmp = D;
-    tmp.symDiffWith(E);
-    safePrint("\nD ⊕ E:\n", tmp);
+//        DDP CH1 = DDP::genSequence(len, univ);
+//        DDP CH2 = DDP::genSequence(3, 100);
+//        constexpr int ind = 2;
+//        CH1.CHANGE(ind, CH2);
 
-    T.unionWith(tmp);
-    safePrint("\n((A ∩ B) ∪ C) ∪ (D ⊕ E):\n", T);
-
-    cout << "\n========== SEQUENCE OPERATIONS ==========";
-    DDP M1 = DDP::genSequence(10, 15);
-    DDP M2 = DDP::genSequence(10, 15);
-    safePrint("\nM1:\n", M1);
-    safePrint("\nM2:\n", M2);
-    DDP M = DDP::MERGE(M1, M2);
-    safePrint("\nMERGE(M1,M2):\n", M);
-
-    DDP E1({0, 1, 2, 3, 4, 5, 6, 7, 8});
-    DDP E2({3, 4, 5});
-    safePrint("\nE1:\n", E1);
-    safePrint("\nE2:\n", E2);
-    try {
-        E1.EXCL(E2);
-        safePrint("\nE1 EXCL E2:\n", E1);
-    } catch (const std::exception &ex) {
-        cout << "\nError: " << ex.what() << '\n';
+        auto stop = std::chrono::high_resolution_clock::now();
+        cout << len << " " << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
     }
-
-    DDP CH1 = DDP::genSequence(10, 15);
-    DDP CH2 = DDP::genSequence(3, 100);
-    constexpr int ind = 2;
-    safePrint("\nCH1:\n", CH1);
-    cout << "\nCH1 CHANGE from index " << ind << " by ";
-    CH2.printSeq();
-    try {
-        CH1.CHANGE(ind, CH2);
-        safePrint("", CH1);
-    } catch (const std::exception &ex) {
-        cout << "Error: " << ex.what() << '\n';
-    }
-
     return 0;
 }
