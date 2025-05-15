@@ -130,10 +130,49 @@ class DDP {
         }
     }
 
+    static Node *cloneTree(const Node *n) {
+        if (!n) return nullptr;
+        Node *m = new Node(n->key);
+        m->h = n->h;
+        m->l = cloneTree(n->l);
+        m->r = cloneTree(n->r);
+        return m;
+    }
+
+    // Вспомогательный поиск по ключу в дереве (ключи уникальны)
+    static Node *findNode(Node *n, int key) {
+        if (!n) return nullptr;
+        if (key == n->key) return n;
+        return key < n->key ? findNode(n->l, key) : findNode(n->r, key);
+    }
+
 public:
     DDP() = default;
 
-    explicit DDP(const std::vector<int> &v) { for (const int k: v)add(k); }
+    explicit DDP(const std::vector<int> &v) { for (int k: v) add(k); }
+
+    // Копирующий конструктор
+    DDP(const DDP &other) {
+        // 1) Клонируем всё дерево
+        root = cloneTree(other.root);
+        // 2) Восстанавливаем seq: для каждого указателя из other.seq
+        //    в новом дереве находим узел с тем же ключом
+        seq.clear();
+        seq.reserve(other.seq.size());
+        for (const Node *p: other.seq) {
+            seq.push_back(findNode(root, p->key));
+        }
+    }
+
+    // Оператор копирующего присваивания (copy-and-swap)
+    DDP &operator=(const DDP &other) {
+        if (this != &other) {
+            DDP tmp(other); // создаём временную копию
+            std::swap(root, tmp.root);
+            std::swap(seq, tmp.seq);
+        }
+        return *this;
+    }
 
     void add(const int k) {
         Node *ref = nullptr;
@@ -273,14 +312,15 @@ private:
         if (n->r)fillMatrix(n->r, col + gap, row + 2, gap, m);
     }
 
+    static void clearNodes(Node *n) {
+        if (!n) return;
+        clearNodes(n->l);
+        clearNodes(n->r);
+        delete n;
+    }
+
     void clear() {
-        std::function<void(Node *)> del = [&](const Node *n) {
-            if (!n)return;
-            del(n->l);
-            del(n->r);
-            delete n;
-        };
-        del(root);
+        clearNodes(root);
         root = nullptr;
         seq.clear();
     }
@@ -319,47 +359,48 @@ int main() {
     using std::cout;
     freopen("in.txt", "w", stdout);
 
-    auto safePrint = [&](const std::string &label, const DDP &ds) {
-        cout << label;
-        try {
-            ds.printSeq();
-            ds.printTree();
-        } catch (const std::exception &ex) {
-            cout << "Error: " << ex.what() << '\n';
-        }
-    };
-
-    for (int len = 10; len < 20; ++len) {
-        int univ = len * 3 / 2;
-        auto start = std::chrono::high_resolution_clock::now();
+    for (int len = 10; len < 200; ++len) {
+        const int univ = len * 3 / 2;
+        int ans = 0;
         DDP A = DDP::genUniqueSet(len, univ);
         DDP B = DDP::genUniqueSet(len, univ);
         DDP C = DDP::genUniqueSet(len, univ);
         DDP D = DDP::genUniqueSet(len, univ);
         DDP E = DDP::genUniqueSet(len, univ);
 
-        DDP T = A;
-        T.intersectWith(B);
-        T.unionWith(C);
-        DDP tmp = D;
-        tmp.symDiffWith(E);
-        T.unionWith(tmp);
+        DDP M1 = DDP::genSequence(len, univ);
+        DDP M2 = DDP::genSequence(len, univ);
 
-//        DDP M1 = DDP::genSequence(len, univ);
-//        DDP M2 = DDP::genSequence(len, univ);
-//        DDP M = DDP::MERGE(M1, M2);
+        DDP CH1 = DDP::genSequence(len, univ);
+        DDP CH2 = DDP::genSequence(len / 2, univ);
 
-//        DDP E1({0, 1, 2, 3, 4, 5, 6, 7, 8});
-//        DDP E2({3, 4, 5});
-//        E1.EXCL(E2);
+        auto start = std::chrono::high_resolution_clock::now();
 
-//        DDP CH1 = DDP::genSequence(len, univ);
-//        DDP CH2 = DDP::genSequence(3, 100);
-//        constexpr int ind = 2;
-//        CH1.CHANGE(ind, CH2);
+        ans += A.cardinality() + B.cardinality();
+        A.intersectWith(B);
+
+        ans += A.cardinality() + C.cardinality();
+        A.unionWith(C);
+
+        ans += D.cardinality() + E.cardinality();
+        D.symDiffWith(E);
+
+        ans += A.cardinality() + D.cardinality();
+        A.unionWith(D);
+
+        ans += M1.cardinality() + M2.cardinality();
+        DDP M = DDP::MERGE(M1, M2);
+
+        constexpr int ind = 2;
+
+        ans += CH1.cardinality() + CH2.cardinality();
+        CH1.CHANGE(ind, CH2);
+
+        ans += CH1.cardinality() + CH2.cardinality();
+        CH1.EXCL(CH2);
 
         auto stop = std::chrono::high_resolution_clock::now();
-        cout << len << " " << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
+        cout << ans / 14 << " " << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
     }
     return 0;
 }
