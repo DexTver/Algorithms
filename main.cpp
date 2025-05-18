@@ -42,7 +42,7 @@ class DDP {
 
     static int bal(const Node *n) { return n ? height(n->l) - height(n->r) : 0; }
 
-    static Node *insert(Node *n, int k, Node **out) {
+    static Node *insert(Node *n, const int k, Node **out) {
         if (!n) {
             *out = new Node(k);
             return *out;
@@ -118,18 +118,6 @@ class DDP {
         }
     }
 
-    void rebuildSeqRandom() {
-        std::vector<int> keys;
-        inorder(root, keys);
-        std::shuffle(keys.begin(), keys.end(), std::mt19937{std::random_device{}()});
-        seq.clear();
-        for (const int k: keys) {
-            Node *ref = nullptr;
-            insert(root, k, &ref);
-            seq.push_back(ref);
-        }
-    }
-
     static Node *cloneTree(const Node *n) {
         if (!n) return nullptr;
         Node *m = new Node(n->key);
@@ -139,7 +127,7 @@ class DDP {
         return m;
     }
 
-    static Node *findNode(Node *n, int key) {
+    static Node *findNode(Node *n, const int key) {
         if (!n) return nullptr;
         if (key == n->key) return n;
         return key < n->key ? findNode(n->l, key) : findNode(n->r, key);
@@ -154,7 +142,7 @@ class DDP {
         if (n->r)fillMatrix(n->r, col + gap, row + 2, gap, m);
     }
 
-    static void clearNodes(Node *n) {
+    static void clearNodes(const Node *n) {
         if (!n) return;
         clearNodes(n->l);
         clearNodes(n->r);
@@ -179,7 +167,7 @@ class DDP {
 public:
     DDP() = default;
 
-    explicit DDP(const std::vector<int> &v) { for (int k: v) add(k); }
+    explicit DDP(const std::vector<int> &v) { for (const int k: v) add(k); }
 
     DDP(const DDP &other) {
         root = cloneTree(other.root);
@@ -234,14 +222,12 @@ public:
             Node *r = nullptr;
             root = insert(root, k, &r);
         }
-        rebuildSeqRandom();
     }
 
     void intersectWith(const DDP &o) {
         std::vector<int> ks;
         inorder(root, ks);
         for (const int k: ks)if (!o.contains(k))root = erase(root, k);
-        rebuildSeqRandom();
     }
 
     void symDiffWith(const DDP &o) {
@@ -256,7 +242,6 @@ public:
                 Node *r = nullptr;
                 root = insert(root, k, &r);
             }
-        rebuildSeqRandom();
     }
 
     void MERGE(const DDP &other) {
@@ -343,7 +328,7 @@ public:
 int main() {
     using std::cout;
     freopen("in.txt", "w", stdout);
-    for (int len = 100; len <= 10000; len += 100) {
+    for (int len = 10; len <= 200; len += 1) {
         for (int i = 0; i < 1; ++i) {
             const int univ = len * 3 / 2;
             DDP A = DDP::genUniqueSet(len, univ);
