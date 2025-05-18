@@ -329,8 +329,9 @@ int main() {
     using std::cout;
     freopen("in.txt", "w", stdout);
     for (int len = 10; len <= 200; len += 1) {
-        for (int i = 0; i < 1; ++i) {
+        for (int i = 0; i < 3; ++i) {
             const int univ = len * 3 / 2;
+            int ans = 0;
             DDP A = DDP::genUniqueSet(len, univ);
             DDP B = DDP::genUniqueSet(len, univ);
             DDP C = DDP::genUniqueSet(len, univ);
@@ -346,22 +347,29 @@ int main() {
             constexpr int ind = 2;
             auto start = std::chrono::high_resolution_clock::now();
 
+            ans += A.cardinality() + B.cardinality();
             A.intersectWith(B);
 
+            ans += A.cardinality() + C.cardinality();
             A.unionWith(C);
 
+            ans += D.cardinality() + E.cardinality();
             D.symDiffWith(E);
 
+            ans += A.cardinality() + D.cardinality();
             A.unionWith(D);
 
+            ans += M1.cardinality() + M2.cardinality();
             M1.MERGE(M2);
 
+            ans += CH1.cardinality() + CH2.cardinality();
             CH1.CHANGE(ind, CH2);
 
+            ans += CH1.cardinality() + CH2.cardinality();
             CH1.EXCL(CH2);
 
             auto stop = std::chrono::high_resolution_clock::now();
-            cout << len << " " << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
+            cout << ans / 14 << " " << std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count() << "\n";
         }
     }
     return 0;
